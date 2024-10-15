@@ -124,39 +124,39 @@ importance_df = pd.DataFrame({'Feature': feature_names, 'Importance': feature_im
 - **Accuracy:** 93%
 - **Confusion Matrix:**
 ```python
-[[2520   47]
- [ 153   98]]
+[[2541   41]]
+ [ 152   84]]
 ```
 - **Classification Report:**
-  - Precision (Class 1 - Downtime): 68%
-  - Recall (Class 1 - Downtime): 39%
-  - F1-Score (Class 1 - Downtime): 0.49
+  - Precision (Class 1 - Downtime): 67%
+  - Recall (Class 1 - Downtime): 36%
+  - F1-Score (Class 1 - Downtime): 0.47
 - **Top 5 Importance features:**
   1. AmbientConditions.AmbientHumidity.U.Actual
-  2. Machine3.MaterialTemperature.U.Actua
-  3. FirstStage.CombinerOperation.Temperature1.U.Actual
-  4. Machine1.MotorRPM.C.Actual
-  5. Machine2.Zone1Temperature.C.Actual
+  2. Machine3.MaterialTemperature.U.Actual
+  3. Machine1.MotorRPM.C.Actual
+  4. Machine2.Zone1TemperatureC.Actual
+  5. Machine2.MaterialTemperature.U.Actual
 - **Conclusion:**
   - The tuned Random Forest model for Stage 1 downtime prediction achieved high accuracy, with important features including environmental and machine temperature metrics. However, recall for downtime (class 1) events can be improved, as it missed some downtime events.
     
 ### Stage 2 Downtime Prediction (Random Forest with SMOTE and Hyperparameter Tuning)
-- **Accuracy:** 93.2%
+- **Accuracy:** 93%
 - **Confusion Matrix:**
 ```python
-[[2509   81]
- [ 111   117]]
+[[2510   77]
+ [ 107   124]]
 ```
 - **Classification Report:**
-  - Precision (Class 1 - Downtime): 59%
-  - Recall (Class 1 - Downtime): 51%
-  - F1-Score (Class 1 - Downtime): 0.55
+  - Precision (Class 1 - Downtime): 62%
+  - Recall (Class 1 - Downtime): 54%
+  - F1-Score (Class 1 - Downtime): 0.57
 - **Top 5 Important features:**
   1. Machine4.Temperature3.C.Actual
   2. Machine3.MaterialTemperature.U.Actual
-  3. Machine5.ExitTemperature.U.Actual
-  4. Machine1.MaterialTemperature.U.Actual
-  5. Machine2.RawMaterial.Property2
+  3. Machine1.MaterialTemperature.U.Actual
+  4. Machine5.ExitTemperature.U.Actual
+  5. Machine3.MaterialPressure.U.Actual
 - **Conclusion:**
   - Stage 2's downtime prediction model performed well with high accuracy and identified critical features such as machine temperatures and exit temperatures. The recall for downtime events is slightly higher than in Stage 1, indicating improved detection of downtime periods.
 ---
