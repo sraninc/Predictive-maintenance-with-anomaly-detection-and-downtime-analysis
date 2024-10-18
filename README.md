@@ -1,6 +1,6 @@
 # Predictive Maintenance with Anomaly Detection and Downtime Prediction
 
-This project, developed by **Sneha Rani** focuses on detecting anomalies and predicting downtimes in a multi-stage continuous manufacturing process. The data consists of sensor measurements from two stages of the production line, where we aim to detect anomalies in the measurements and predict downtime events for maintenance purposes.
+This project, developed by **Sneha Rani, PhD** focuses on detecting anomalies and predicting downtimes in a multi-stage continuous manufacturing process. The data consists of sensor measurements from two stages of the production line, where we aim to detect anomalies in the measurements and predict downtime events for maintenance purposes.
 
 ## Table of Contents
 - [Introduction](#introduction)
@@ -41,48 +41,27 @@ The main focus areas include:
 
 4. **Modeling and Evaluation**:
    - Various baseline models, including **Random Forest** and **Logistic Regression**, were used to predict downtime.
-   - **SMOTE (Synthetic Minority Oversampling Technique)** was applied to handle the class imbalance between downtime and normal operations.
+   - **SMOTE (Synthetic Minority Oversampling Technique)** and **Class Weighting** was applied to handle the class imbalance between downtime and normal operations.
 
 ---
 
 ## Anomaly Detection
 
-### Methods Used:
-- **Isolation Forest**: This unsupervised learning algorithm was used to detect anomalies in the sensor readings. It isolates observations that differ significantly from the rest of the data.
-- **Z-Score Method**: Another method was applied to mark anomalies by calculating the Z-score for each sensor measurement. Measurements with a Z-score greater than a threshold were marked as anomalies.
-
-### Code Example:
-```python
-from sklearn.ensemble import IsolationForest
-iso_forest = IsolationForest(contamination=0.01)
-
-# Apply Isolation Forest for anomaly detection
-for f in sensor_features:
-    resampled_data_with_anomalies[f'{f}_anomaly'] = iso_forest.fit_predict(resampled_data[[f]])
-```
+- Values were classified as anomalies if they fall outside a predefined acceptable range (±10%) around the setpoint.
 ---
 
 ## Downtime Prediction
 
 ### Labeling Downtime:
-- A downtime indicator was created based on the presence of anomalies in the Stage 1 and Stage 2 output measurements.
+- A downtime indicator was created based on the presence of anomalies in the Stage 1 and Stage 2 output measurements using majority rule for downtime detection.
 - Downtime events were then grouped, and the duration of each event was calculated for further analysis.
 
-### Code Example:
-```python
-# Create a downtime indicator for Stage 1
-esampled_data_with_ano['stage1_downtime_indicator'] = resampled_data_with_ano[stage1_anomaly_columns].max(axis=1)
-
-# Calculate downtime durations
-downtime_durations = downtime_events.groupby('downtime_event')['time_stamp'].agg(['min', 'max'])
-downtime_durations['duration_seconds'] = (downtime_durations['max'] - downtime_durations['min']).dt.total_seconds()
-```
 ---
 
 ## Models used
 
 ### Random Forest with SMOTE:
-- **Random Forese** was used for downtime prediction due to its ability to handle high-dimensional data and its robustness to overfitting.
+- **Random Forest** was used for downtime prediction due to its ability to handle high-dimensional data and its robustness to overfitting.
 - **SMOTE** was applied to address the class imbalance problem by oversampling the minority class (Downtime events).
 
 ### Logistic Regression:
@@ -120,52 +99,52 @@ importance_df = pd.DataFrame({'Feature': feature_names, 'Importance': feature_im
 ---
 
 ## Results
-### Stage 1 Downtime Prediction (Random Forest with SMOTE and Hyperparameter Tuning)
-- **Accuracy:** 93%
+### Stage 1 Downtime Prediction (Random Forest after Hyperparameter Tuning)
+- **Accuracy:** 92%
 - **Confusion Matrix:**
 ```python
-[[2541   41]]
- [ 152   84]]
+[[821   154]]
+ [ 73   1770]]
 ```
 - **Classification Report:**
-  - Precision (Class 1 - Downtime): 67%
-  - Recall (Class 1 - Downtime): 36%
-  - F1-Score (Class 1 - Downtime): 0.47
+  - Precision (Class 1 - Downtime): 92%
+  - Recall (Class 1 - Downtime): 96%
+  - F1-Score (Class 1 - Downtime): 0.94
 - **Top 5 Importance features:**
-  1. AmbientConditions.AmbientHumidity.U.Actual
-  2. Machine3.MaterialTemperature.U.Actual
-  3. Machine1.MotorRPM.C.Actual
-  4. Machine2.Zone1TemperatureC.Actual
-  5. Machine2.MaterialTemperature.U.Actual
+  1. Machine3.MaterialTemperature.U.Actual	
+  2. Machine3.RawMaterial.Property2
+  3. Machine3.MaterialPressure.U.Actual
+  4. Machine3.RawMaterial.Property4	
+  5. FirstStage.CombinerOperation.Temperature2.U.Actual
 - **Conclusion:**
-  - The tuned Random Forest model for Stage 1 downtime prediction achieved high accuracy, with important features including environmental and machine temperature metrics. However, recall for downtime (class 1) events can be improved, as it missed some downtime events.
+  - The tuned Random Forest model for Stage 1 downtime prediction achieved high accuracy, with important features including machine temperature and raw material properties metrics. 
     
-### Stage 2 Downtime Prediction (Random Forest with SMOTE and Hyperparameter Tuning)
-- **Accuracy:** 93%
+### Stage 2 Downtime Prediction (Random Forest with SMOTE after Hyperparameter Tuning)
+- **Accuracy:** 90%
 - **Confusion Matrix:**
 ```python
-[[2510   77]
- [ 107   124]]
+[[2148   143]
+ [ 143   384]]
 ```
 - **Classification Report:**
-  - Precision (Class 1 - Downtime): 62%
-  - Recall (Class 1 - Downtime): 54%
-  - F1-Score (Class 1 - Downtime): 0.57
+  - Precision (Class 1 - Downtime): 73%
+  - Recall (Class 1 - Downtime): 73%
+  - F1-Score (Class 1 - Downtime): 0.73
 - **Top 5 Important features:**
-  1. Machine4.Temperature3.C.Actual
-  2. Machine3.MaterialTemperature.U.Actual
-  3. Machine1.MaterialTemperature.U.Actual
-  4. Machine5.ExitTemperature.U.Actual
-  5. Machine3.MaterialPressure.U.Actual
+  1. Stage1.Output.Measurement1.U.Actual	
+  2. FirstStage.CombinerOperation.Temperature2.U.Actual
+  3. Stage1.Output.Measurement0.U.Actual	
+  4. Stage1.Output.Measurement2.U.Actual
+  5. AmbientConditions.AmbientHumidity.U.Actual
 - **Conclusion:**
-  - Stage 2's downtime prediction model performed well with high accuracy and identified critical features such as machine temperatures and exit temperatures. The recall for downtime events is slightly higher than in Stage 1, indicating improved detection of downtime periods.
+  - Stage 2's downtime prediction model performed well with high accuracy and identified critical features such as machine humidity and stage 1 predictions. The recall for downtime events is slightly higher in Stage 1.
 ---
 
 ## How to Run
 1. Clone the repository:
 ```python
-git clone https://github.com/your-username/anomaly-detection-downtime-prediction.git
-cd anomaly-detection-downtime-prediction
+git clone https://github.com/sraninc/predictive_maintenance_liveline_tech.git
+cd predictive_maintenance_liveline_tech
 ```
 
 2. Install required dependencies:
@@ -185,7 +164,7 @@ python visualize_downtime_dashboard.py
 ---
 
 ## Future Work:
-- **Fine-Tuning Models**: I performed the hyperparameter tuning for Random Forest Classifier with SMOTE but there is always a scope of further hyperparameter tuning to imporve recall for predicting downtime events.
+- **Fine-Tuning Models**: I performed the hyperparameter tuning for Random Forest Classifier but there is always a scope of further hyperparameter tuning to imporve recall for predicting downtime events.
 - **Handling Class Imbalance**: While the fine-tuning has improved performance, the imbalance between downtime and normal operations is still impacting the recall for downtime events. I would suggest using more advanced techniques like **cost-sensitive learning**.
    
 ## License
